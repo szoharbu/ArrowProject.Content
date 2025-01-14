@@ -1,8 +1,7 @@
 import random
 
-import Arrow_API.resources
 from Arrow_API import AR
-from Arrow_API.resources.memory_manager import MemoryManager_API
+from Arrow_API.resources.memory_manager import MemoryManager_API as MemoryManager
 from Arrow_API.resources.register_manager import RegisterManager_API as RegisterManager
 
 from Utils.configuration_management import Configuration
@@ -10,15 +9,7 @@ from Utils.configuration_management import Configuration
 
 Configuration.Knobs.Config.core_count.set_value(1)
 Configuration.Knobs.Template.scenario_count.set_value(3)
-#Configuration.Knobs.Template.scenario_query.set_value({"direct_scenario":40, "direct_memory_scenario":59,Configuration.Tag.REST:1})
-Configuration.Knobs.Template.scenario_query.set_value({"zohar":5009,Configuration.Tag.REST:1})
-
-@AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
-def zohar():
-    for i in range(100):
-        Arrow_API.resources.MemoryManager_API.Memory()
-        reg = RegisterManager.get()
-        mem_block = MemoryManager_API.MemoryBlock(name=f"blockzz{i}",byte_size=20, shared=True)
+Configuration.Knobs.Template.scenario_query.set_value({"direct_scenario":40, "direct_memory_scenario":59,Configuration.Tag.REST:1})
 
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
