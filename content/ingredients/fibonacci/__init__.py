@@ -1,8 +1,9 @@
 import random
 from Utils.configuration_management import Configuration
-from Arrow_API import AR, resources as Sources
-#from Tool.frontend.AR_API import AR
-#from Tool.frontend.sources_API import Sources
+from Arrow_API import AR
+from Arrow_API.resources.register_manager import RegisterManager_API
+from Arrow_API.resources.memory_manager import MemoryManager_API
+
 from Tool.state_management import get_state_manager
 
 from Submodules.arrow_content.content_repo.content.ingredients.fibonacci.fibonacci_caller import fibonacci_caller
@@ -26,9 +27,9 @@ class fibonacciRecursive_ing(AR.Ingredient):
 
     def init(self):
         state_manager = get_state_manager()
-        self.fibonacci_result_mem = Sources.Memory()
-        self.n_register = Sources.RegisterManager.get_and_reserve()
-        self.result_register = Sources.RegisterManager.get_and_reserve()
+        self.fibonacci_result_mem = MemoryManager.Memory()
+        self.n_register = RegisterManager.get_and_reserve()
+        self.result_register = RegisterManager.get_and_reserve()
 
         global _fibonacci_recursive_code_block
         if _fibonacci_recursive_code_block is not None:
@@ -46,17 +47,17 @@ class fibonacciRecursive_ing(AR.Ingredient):
             with AR.BranchToSegment(code_block=self.fibonacci_block):
 
                 if Configuration.Architecture.riscv:
-                    sp_reg = Sources.RegisterManager.get("sp")
-                    ra_reg = Sources.RegisterManager.get("ra")
+                    sp_reg = RegisterManager.get("sp")
+                    ra_reg = RegisterManager.get("ra")
                 elif Configuration.Architecture.arm:
-                    sp_reg = Sources.RegisterManager.get("sp")
-                    fp_reg = Sources.RegisterManager.get("fp")
-                    lr_reg = Sources.RegisterManager.get("lr")
+                    sp_reg = RegisterManager.get("sp")
+                    fp_reg = RegisterManager.get("fp")
+                    lr_reg = RegisterManager.get("lr")
 
                 else:
                     raise ValueError('Unsupported Architecture for this code ')
 
-                tmp_reg = Sources.RegisterManager.get_and_reserve()
+                tmp_reg = RegisterManager.get_and_reserve()
                 AR.comment("Save return address to stack, and check if N reached base-case")
                 if Configuration.Architecture.riscv:
                     AR.Stack.push([ra_reg, self.n_register])
@@ -134,47 +135,47 @@ class fibonacciRecursive_ing(AR.Ingredient):
                     #AR.asm(f'ldp {fp_reg}, {lr_reg}, [{sp_reg}], #16', comment="Restore frame pointer and link register")
                     AR.asm("ret", comment="Return to caller")
 
-                Sources.RegisterManager.free(tmp_reg)
+                RegisterManager.free(tmp_reg)
 
-            Sources.RegisterManager.free(self.n_register)
-            Sources.RegisterManager.free(self.result_register)
+            RegisterManager.free(self.n_register)
+            RegisterManager.free(self.result_register)
         yield
 
     def body(self):
 
         yield
         # TODO:: need an API to check if a register is free, and if not need to store it in stack before usage
-        self.n_register = Sources.RegisterManager.get(self.n_register.name)
-        Sources.RegisterManager.reserve(self.n_register)
+        self.n_register = RegisterManager.get(self.n_register.name)
+        RegisterManager.reserve(self.n_register)
 
 
         recursive_count = random.randint(2, 5)
 
         if Configuration.Architecture.riscv:
-            sp_reg = Sources.RegisterManager.get("sp")
-            ra_reg = Sources.RegisterManager.get("ra")
-            self.result_register = Sources.RegisterManager.get(self.result_register.name)
-            Sources.RegisterManager.reserve(self.result_register)
+            sp_reg = RegisterManager.get("sp")
+            ra_reg = RegisterManager.get("ra")
+            self.result_register = RegisterManager.get(self.result_register.name)
+            RegisterManager.reserve(self.result_register)
 
             AR.asm(f'li {self.n_register}, {recursive_count}', comment=f"set the value of {recursive_count} into {self.n_register}") #TODO:: Implement a function to store values into operands! will make code arch-agnostic
             AR.asm(f'addi, {sp_reg}, {sp_reg}, -4', comment=f"Decrement stack pointer (allocate space)")                 #TODO:: Implement a function to push/pop values to stack! will make code arch-agnostic
             AR.asm(f'sw {self.n_register}, 0({sp_reg})', comment=f"Store the value of {self.n_register} at the top of the stack")
             AR.asm(f'jal {ra_reg}, {self.fibonacci_block.code_label}', comment=f"Call fib(n)")                     #TODO:: Implement a function to branch to different locations! will make code arch-agnostic
-            Sources.RegisterManager.free(self.n_register)
-            tmp_reg = Sources.RegisterManager.get_and_reserve()
+            RegisterManager.free(self.n_register)
+            tmp_reg = RegisterManager.get_and_reserve()
             AR.asm(f'la {tmp_reg}, {self.fibonacci_result_mem.unique_label}', comment="Load address of fib_result")
             AR.asm(f'sw {self.result_register}, 0({tmp_reg})', comment="Store result in fib_result")
-            Sources.RegisterManager.free(tmp_reg)
-            Sources.RegisterManager.free(self.result_register)
+            RegisterManager.free(tmp_reg)
+            RegisterManager.free(self.result_register)
         elif Configuration.Architecture.arm:
             AR.asm(f'mov {self.n_register}, #{recursive_count}', comment=f"set the value of {recursive_count} into {self.n_register}")
             AR.asm(f'bl {self.fibonacci_block.code_label}', comment=f"Call fib(n)")
             AR.comment(f"Result will be in {self.n_register} after the function returns")
-            tmp_reg = Sources.RegisterManager.get_and_reserve()
+            tmp_reg = RegisterManager.get_and_reserve()
             AR.asm(f'ldr {tmp_reg}, ={self.fibonacci_result_mem.unique_label}', comment=f"Load the address of 'result memory' into {tmp_reg}")
             AR.asm(f'str {self.result_register}, [{tmp_reg}]', comment="Store the value of {self.result_register} into memory at 'result memory'")
-            Sources.RegisterManager.free(self.n_register)
-            Sources.RegisterManager.free(tmp_reg)
+            RegisterManager.free(self.n_register)
+            RegisterManager.free(tmp_reg)
             '''
             x0 == n_register
             w0 = result register

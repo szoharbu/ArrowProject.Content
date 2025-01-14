@@ -2,9 +2,10 @@
 import random
 from Utils.configuration_management import Configuration
 
-from Arrow_API import AR, resources as Sources
-#from Tool.frontend.AR_API import AR
-#from Tool.frontend.sources_API import Sources
+from Arrow_API import AR
+from Arrow_API.resources.register_manager import RegisterManager_API
+from Arrow_API.resources.memory_manager import MemoryManager_API
+
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.STACK])
 class basic_stack_ing(AR.Ingredient):
@@ -12,7 +13,7 @@ class basic_stack_ing(AR.Ingredient):
         pass
 
     def body(self):
-        reg = Sources.RegisterManager.get()
+        reg = RegisterManager.get()
         AR.Stack.push([reg])
         yield
         AR.Stack.pop([reg])
@@ -32,21 +33,21 @@ class multi_stack_ing(AR.Ingredient):
     def body(self):
         reglist = []
         for _ in range(self.count):
-            reg = Sources.RegisterManager.get_and_reserve()
+            reg = RegisterManager.get_and_reserve()
             reglist.append(reg)
         AR.Stack.push(reglist)
         for reg in reglist:
-            Sources.RegisterManager.free(reg)
+            RegisterManager.free(reg)
 
         yield
 
         reglist = []
         for _ in range(self.count):
-            reg = Sources.RegisterManager.get_and_reserve()
+            reg = RegisterManager.get_and_reserve()
             reglist.append(reg)
         AR.Stack.pop(reglist)
         for reg in reglist:
-            Sources.RegisterManager.free(reg)
+            RegisterManager.free(reg)
 
     def final(self):
         pass

@@ -1,9 +1,9 @@
 
 import random
 from Utils.configuration_management import Configuration
-from Arrow_API import AR, resources as Sources
-#from Tool.frontend.AR_API import AR
-#from Tool.frontend.sources_API import Sources
+from Arrow_API import AR
+from Arrow_API.resources.register_manager import RegisterManager_API
+from Arrow_API.resources.memory_manager import MemoryManager_API
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH)
@@ -15,7 +15,7 @@ class ing_A(AR.Ingredient):
         AR.generate(instruction_count=burst_count)
 
     def body(self):
-        reg = Sources.RegisterManager.get_and_reserve()
+        reg = RegisterManager.get_and_reserve()
 
         AR.generate(src=reg)
         yield
@@ -23,7 +23,7 @@ class ing_A(AR.Ingredient):
         yield
         AR.generate(src=reg)
 
-        Sources.RegisterManager.free(reg)
+        RegisterManager.free(reg)
 
     def final(self):
         AR.generate()
@@ -34,14 +34,14 @@ class ing_B(AR.Ingredient):
         pass
 
     def body(self):
-        mem = Sources.Memory(init_value=random.randint(1,1000))
-        reg = Sources.RegisterManager.get_and_reserve()
+        mem = MemoryManager.Memory(init_value=random.randint(1,1000))
+        reg = RegisterManager.get_and_reserve()
         AR.asm(f"mov {mem}, 0x1234")
         yield
         AR.asm(f"mov {reg}, {mem}")
         yield
         AR.asm(f"mov {mem}, {reg}")
-        Sources.RegisterManager.free(reg)
+        RegisterManager.free(reg)
 
     def final(self):
         pass
@@ -56,10 +56,10 @@ class ing_B_with_precond(AR.Ingredient):
         pass
 
     def body(self):
-        mem1 = Sources.Memory()
-        mem2 = Sources.Memory(shared=True)
-        reg = Sources.RegisterManager.get_and_reserve()
-        reg2 = Sources.RegisterManager.get_and_reserve()
+        mem1 = MemoryManager.Memory()
+        mem2 = MemoryManager.Memory(shared=True)
+        reg = RegisterManager.get_and_reserve()
+        reg2 = RegisterManager.get_and_reserve()
         if Configuration.Architecture.x86:
             AR.asm(f"mov {mem1}, 0x1234")
             yield
@@ -82,8 +82,8 @@ class ing_B_with_precond(AR.Ingredient):
             AR.asm(f"sub {reg}, {reg}, {reg2}")
 
 
-        Sources.RegisterManager.free(reg)
-        Sources.RegisterManager.free(reg2)
+        RegisterManager.free(reg)
+        RegisterManager.free(reg2)
 
     def final(self):
         pass
@@ -91,7 +91,7 @@ class ing_B_with_precond(AR.Ingredient):
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.LOW, precondition=Configuration.Architecture.x86)
 class ing_C(AR.Ingredient):
     def init(self):
-        reg = Sources.RegisterManager.get()
+        reg = RegisterManager.get()
         AR.asm(f"mov {reg}, 0x12345678")
         AR.asm(f"push {reg}")
         yield
@@ -100,7 +100,7 @@ class ing_C(AR.Ingredient):
         pass
 
     def final(self):
-        reg = Sources.RegisterManager.get()
+        reg = RegisterManager.get()
         AR.asm(f"pop {reg}")
         AR.asm(f"cmp {reg}, 0x12345678")
         yield
@@ -112,7 +112,7 @@ class riscv_load_stress(AR.Ingredient):
         self.label = AR.Label(postfix="riscv_label")
 
     def init(self):
-        self.mem = Sources.Memory(shared=True)
+        self.mem = MemoryManager.Memory(shared=True)
         for i in range(2):
             AR.generate(src=self.mem, query=(AR.Instruction.group=="load"))
             yield

@@ -1,18 +1,19 @@
-from Arrow_API import AR, resources as Sources
-#from Tool.frontend.AR_API import AR
-#from Tool.frontend.sources_API import Sources
+from Arrow_API import AR
+from Arrow_API.resources.register_manager import RegisterManager_API
+from Arrow_API.resources.memory_manager import MemoryManager_API
+
 from Utils.configuration_management import Configuration
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
 def loop_scenario():
-    reg1 = Sources.RegisterManager.get_and_reserve()
+    reg1 = RegisterManager.get_and_reserve()
     loop_counter = AR.choice(values = {10:90,20:10})
     with AR.Loop(counter=loop_counter, counter_direction='increment'):
         AR.asm(f"nop")
-        reg2 = Sources.RegisterManager.get_and_reserve()
+        reg2 = RegisterManager.get_and_reserve()
         AR.generate(instruction_count=5)
-        Sources.RegisterManager.free(reg2)
-    Sources.RegisterManager.free(reg1)
+        RegisterManager.free(reg2)
+    RegisterManager.free(reg1)
 
 
 

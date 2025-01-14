@@ -1,30 +1,41 @@
 import random
-from Arrow_API import AR, resources as Sources
+
+import Arrow_API.resources
+from Arrow_API import AR
+from Arrow_API.resources.memory_manager import MemoryManager_API
+from Arrow_API.resources.register_manager import RegisterManager_API as RegisterManager
+
 from Utils.configuration_management import Configuration
-#from Tool.frontend.AR_API import AR
-#from Tool.frontend.sources_API import Sources
+
 
 Configuration.Knobs.Config.core_count.set_value(1)
-Configuration.Knobs.Template.scenario_count.set_value(1)
-Configuration.Knobs.Template.scenario_query.set_value({"direct_scenario":40, "direct_memory_scenario":59,Configuration.Tag.REST:1})
+Configuration.Knobs.Template.scenario_count.set_value(3)
+#Configuration.Knobs.Template.scenario_query.set_value({"direct_scenario":40, "direct_memory_scenario":59,Configuration.Tag.REST:1})
+Configuration.Knobs.Template.scenario_query.set_value({"zohar":5009,Configuration.Tag.REST:1})
+
+@AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
+def zohar():
+    for i in range(100):
+        Arrow_API.resources.MemoryManager_API.Memory()
+        reg = RegisterManager.get()
+        mem_block = MemoryManager_API.MemoryBlock(name=f"blockzz{i}",byte_size=20, shared=True)
 
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
 def direct_memory_scenario():
     AR.comment("inside direct_memory_scenario")
-    mem1 = Sources.Memory()
-    mem2 = Sources.Memory(name='mem2_shared', shared=True)
-    mem_block = Sources.MemoryBlock(name="blockzz100",byte_size=20, shared=True)
-    mem_block2 = Sources.MemoryBlock(name="blockzz150",byte_size=25, shared=True)
-    mem_block3 = Sources.MemoryBlock(name="blockzz200",byte_size=100, shared=True)
-    mem5 = Sources.Memory(name='mem5_partial', memory_block=mem_block, memory_block_offset=2, byte_size=4, shared=True)
-    mem6 = Sources.Memory(name='mem6_partial', memory_block=mem_block2, memory_block_offset=14, byte_size=4, shared=True)
+    mem1 = MemoryManager.Memory()
+    mem2 = MemoryManager.Memory(name='mem2_shared', shared=True)
+    mem_block = MemoryManager.MemoryBlock(name="blockzz100",byte_size=20, shared=True)
+    mem_block2 = MemoryManager.MemoryBlock(name="blockzz150",byte_size=25, shared=True)
+    mem_block3 = MemoryManager.MemoryBlock(name="blockzz200",byte_size=100, shared=True)
+    mem5 = MemoryManager.Memory(name='mem5_partial', memory_block=mem_block, memory_block_offset=2, byte_size=4, shared=True)
+    mem6 = MemoryManager.Memory(name='mem6_partial', memory_block=mem_block2, memory_block_offset=14, byte_size=4, shared=True)
     instr = AR.generate(src=mem5)
     #instr2 = AR.asm(f'mov {mem2}, rax')
     instr = AR.generate(src=mem6)
     for _ in range(100):
         instr = AR.generate()
-        #mem = Sources.Memory(shared=True)
 
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
@@ -40,8 +51,8 @@ def direct_scenario():
     #     AR.asm("nop", comment="simple nop instruction")
 
     AR.comment("store-load memory")
-    mem = Sources.Memory(init_value=0x456)
-    reg = Sources.RegisterManager.get()
+    mem = MemoryManager.Memory(init_value=0x456)
+    reg = RegisterManager.get()
     AR.generate(dest=mem, comment=f" store instruction ")
     AR.generate(src=mem, comment=f" Load instruction ")
     AR.generate(dest=reg, comment=f" reg dest ")
@@ -51,7 +62,7 @@ def direct_scenario():
 
 
     AR.comment("same memory stress with load store of different size")
-    mem = Sources.Memory(init_value=0x123)
+    mem = MemoryManager.Memory(init_value=0x123)
     for _ in range(5):
         action = AR.choice(values=["load","store"])
         size = AR.choice(values=[1,2,4,8])
@@ -69,13 +80,13 @@ def direct_scenario():
         AR.generate(instruction_count=50)
 
     AR.comment("outside of Loop scope, generating 'load mem, reg' instruction")
-    mem1 = Sources.Memory(name="direct_mem", init_value=0x12345678)
-    reg = Sources.RegisterManager.get_and_reserve()
+    mem1 = MemoryManager.Memory(name="direct_mem", init_value=0x12345678)
+    reg = RegisterManager.get_and_reserve()
     if Configuration.Architecture.x86:
         AR.generate(src=mem1, dest=reg)
     else:
         AR.generate(src=mem1, dest=reg, query=(AR.Instruction.group == "load" ))
-    Sources.RegisterManager.free(reg)
+    RegisterManager.free(reg)
 
     if Configuration.Architecture.x86:
         mem2 = mem1.get_partial(byte_size=2, offset=1)
@@ -91,7 +102,7 @@ def direct_array_scenario():
     mem_array = MemoryArray("my_array", [10, 20, 30, 40, 50])
     loop_count = 20
     with AR.Loop(counter=loop_count, counter_direction='increment'):
-        used_reg = Sources.RegisterManager.get_and_reserve()
+        used_reg = RegisterManager.get_and_reserve()
 
         AR.comment(f"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz load to {used_reg}")
         MemoryArray.load_element(used_reg)
@@ -101,5 +112,5 @@ def direct_array_scenario():
         MemoryArray.next_element(1)
         AR.comment("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 
-        Sources.RegisterManager.free(used_reg)
+        RegisterManager.free(used_reg)
 

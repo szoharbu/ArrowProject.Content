@@ -1,11 +1,9 @@
 import random
 
 from Utils.configuration_management import Configuration
-#from Tool.frontend.AR_API import AR
-from Arrow_API import AR, resources as Sources
-from Arrow_API import AR
 
-#from Tool.frontend.sources_API import Sources
+from Arrow_API import AR
+from Arrow_API.resources.memory_manager import MemoryManager_API
 
 '''
 load - store actions of a same memory.  
@@ -13,7 +11,7 @@ load - store actions of a same memory.
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.MEMORY])
 class MemoryPairing_ing(AR.Ingredient):
     def __init__(self):
-        self.mem = Sources.Memory(name="MemoryPairing_memory", init_value=random.randint(0, 0x1000))
+        self.mem = MemoryManager.Memory(name="MemoryPairing_memory", init_value=random.randint(0, 0x1000))
 
     def init(self):
         AR.generate(src=self.mem)
@@ -40,7 +38,7 @@ B2B bursts of memory stores , using a shared memory
 class B2BMemoryStress_ing(AR.Ingredient):
 
     def __init__(self):
-        self.mem = Sources.Memory(shared=True)
+        self.mem = MemoryManager.Memory(shared=True)
 
     def init(self):
         pass
@@ -61,7 +59,7 @@ stressing multiple memory access of the same memory, with different sizes and of
 class MemoryOverlapping(AR.Ingredient):
 
     def __init__(self):
-        self.mem_block = Sources.MemoryBlock(byte_size=random.randint(8,16), init_value=random.randint(1,0xf00000))
+        self.mem_block = MemoryManager.MemoryBlock(byte_size=random.randint(8,16), init_value=random.randint(1,0xf00000))
 
     def init(self):
         pass
@@ -71,7 +69,7 @@ class MemoryOverlapping(AR.Ingredient):
             action = AR.choice(values=["load", "store"])
             size = AR.choice(values=[1, 2, 4, 8])
             offset = random.randint(0, self.mem_block.byte_size - size)
-            partial_mem = Sources.Memory(memory_block=self.mem_block, memory_block_offset=offset, byte_size=size)
+            partial_mem = MemoryManager.Memory(memory_block=self.mem_block, memory_block_offset=offset, byte_size=size)
             if action == "load":
                 AR.generate(src=partial_mem, comment=f" partial memory load instruction ")
             else:  # store
