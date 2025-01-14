@@ -58,7 +58,7 @@ stressing multiple memory access of the same memory, with different sizes and of
 class MemoryOverlapping(AR.Ingredient):
 
     def __init__(self):
-        self.mem_block = Sources.MemoryBlock(byte_size=random.randint(8,16))
+        self.mem_block = Sources.MemoryBlock(byte_size=random.randint(8,16), init_value=random.randint(1,0xf00000))
 
     def init(self):
         pass

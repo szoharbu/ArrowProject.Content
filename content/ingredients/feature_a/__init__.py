@@ -33,7 +33,7 @@ class ing_B(AR.Ingredient):
         pass
 
     def body(self):
-        mem = Sources.Memory()
+        mem = Sources.Memory(init_value=random.randint(1,1000))
         reg = Sources.RegisterManager.get_and_reserve()
         AR.asm(f"mov {mem}, 0x1234")
         yield
