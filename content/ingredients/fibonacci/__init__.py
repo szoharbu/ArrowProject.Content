@@ -1,7 +1,8 @@
 import random
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
-from Tool.frontend.sources_API import Sources
+from Arrow_API import AR, resources as Sources
+#from Tool.frontend.AR_API import AR
+#from Tool.frontend.sources_API import Sources
 from Tool.state_management import get_state_manager
 
 from Submodules.arrow_content.content_repo.content.ingredients.fibonacci.fibonacci_caller import fibonacci_caller

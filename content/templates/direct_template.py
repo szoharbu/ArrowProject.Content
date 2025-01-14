@@ -1,12 +1,12 @@
 import random
+from Arrow_API import AR, resources as Sources
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
-from Tool.frontend.sources_API import Sources
+#from Tool.frontend.AR_API import AR
+#from Tool.frontend.sources_API import Sources
 
 Configuration.Knobs.Config.core_count.set_value(1)
 Configuration.Knobs.Template.scenario_count.set_value(1)
 Configuration.Knobs.Template.scenario_query.set_value({"direct_scenario":40, "direct_memory_scenario":59,Configuration.Tag.REST:1})
-
 
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])

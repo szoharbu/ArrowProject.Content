@@ -1,8 +1,9 @@
 
 import random
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
-from Tool.frontend.sources_API import Sources
+from Arrow_API import AR, resources as Sources
+#from Tool.frontend.AR_API import AR
+#from Tool.frontend.sources_API import Sources
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH)

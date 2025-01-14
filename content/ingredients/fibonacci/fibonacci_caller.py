@@ -1,5 +1,6 @@
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
+#from Tool.frontend.AR_API import AR
+from Arrow_API import AR
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, precondition=Configuration.Architecture.arm)

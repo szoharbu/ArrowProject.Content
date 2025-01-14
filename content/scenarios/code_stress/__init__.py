@@ -2,7 +2,9 @@ import random
 
 from Submodules.arrow_content.content_repo.content.ingredients.feature_a import ing_A
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
+#from Tool.frontend.AR_API import AR
+from Arrow_API import AR
+
 from Tool.ingredient_management import get_ingredient_manager
 from Tool.state_management import get_state_manager
 

@@ -1,8 +1,11 @@
 import random
 
 from Utils.configuration_management import Configuration
-from Tool.frontend.AR_API import AR
-from Tool.frontend.sources_API import Sources
+#from Tool.frontend.AR_API import AR
+from Arrow_API import AR, resources as Sources
+from Arrow_API import AR
+
+#from Tool.frontend.sources_API import Sources
 
 '''
 load - store actions of a same memory.  

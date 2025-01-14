@@ -1,5 +1,6 @@
-from Tool.frontend.AR_API import AR
-from Tool.frontend.sources_API import Sources
+from Arrow_API import AR, resources as Sources
+#from Tool.frontend.AR_API import AR
+#from Tool.frontend.sources_API import Sources
 from Utils.configuration_management import Configuration
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
