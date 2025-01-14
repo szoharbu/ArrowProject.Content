@@ -1,10 +1,8 @@
 import random
 from Utils.configuration_management import Configuration
 from Arrow_API import AR
-from Arrow_API.resources.register_manager import RegisterManager_API
-from Arrow_API.resources.memory_manager import MemoryManager_API
-
-from Tool.state_management import get_state_manager
+from Arrow_API.resources.register_manager import RegisterManager_API as RegisterManager
+from Arrow_API.resources.memory_manager import MemoryManager_API as MemoryManager
 
 from Submodules.arrow_content.content_repo.content.ingredients.fibonacci.fibonacci_caller import fibonacci_caller
 
@@ -26,7 +24,6 @@ class fibonacciRecursive_ing(AR.Ingredient):
         self.result_register = None
 
     def init(self):
-        state_manager = get_state_manager()
         self.fibonacci_result_mem = MemoryManager.Memory()
         self.n_register = RegisterManager.get_and_reserve()
         self.result_register = RegisterManager.get_and_reserve()
@@ -37,8 +34,7 @@ class fibonacciRecursive_ing(AR.Ingredient):
             self.fibonacci_block = _fibonacci_recursive_code_block
         else: # _fibonacci_recursive_code_block is None
 
-            current_state = state_manager.get_active_state()
-            self.fibonacci_block = current_state.memory_manager.allocate_memory_segment(f"fibonacci_block", byte_size=0x500, memory_type=Configuration.Memory_types.CODE)
+            self.fibonacci_block = MemoryManager.MemorySegment(f"fibonacci_block", byte_size=0x500, memory_type=Configuration.Memory_types.CODE)
             AR.comment(f'allocating fibonacci-blocks at {hex(self.fibonacci_block.address)}')
             _fibonacci_recursive_code_block = self.fibonacci_block
 
