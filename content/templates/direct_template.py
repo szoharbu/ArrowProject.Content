@@ -84,7 +84,7 @@ def direct_scenario():
         AR.asm(f"mov {mem2}, 0x1234")
 
 
-@AR.scenario_decorator(random=True, priority=Configuration.Priority.LOW, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
+@AR.scenario_decorator(random=False, priority=Configuration.Priority.LOW, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
 def direct_array_scenario():
     AR.comment("inside direct_array_scenario")
 
