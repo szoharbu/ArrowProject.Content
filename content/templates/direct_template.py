@@ -79,9 +79,9 @@ def direct_scenario():
         AR.generate(src=mem1, dest=reg, query=(AR.Instruction.group == "load" ))
     RegisterManager.free(reg)
 
-    if Configuration.Architecture.x86:
-        mem2 = mem1.get_partial(byte_size=2, offset=1)
-        AR.asm(f"mov {mem2}, 0x1234")
+    # if Configuration.Architecture.x86:
+    #     mem2 = mem1.get_partial(byte_size=2, offset=1)
+    #     AR.asm(f"mov {mem2}, 0x1234")
 
 
 @AR.scenario_decorator(random=False, priority=Configuration.Priority.LOW, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
