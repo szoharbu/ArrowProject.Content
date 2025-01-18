@@ -7,7 +7,7 @@ from Arrow_API.resources.memory_manager import MemoryManager_API as MemoryManage
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH)
-class ing_A(AR.Ingredient):
+class tmp_ing_A(AR.Ingredient):
     def init(self):
         burst_count = random.randint(1, 5)
         AR.generate(instruction_count=burst_count)
@@ -29,7 +29,7 @@ class ing_A(AR.Ingredient):
         AR.generate()
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.MEDIUM, precondition=Configuration.Architecture.x86)
-class ing_B(AR.Ingredient):
+class tmp_ing_B(AR.Ingredient):
     def init(self):
         pass
 
@@ -51,7 +51,7 @@ def random_precondition():
     return value
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FAST, Configuration.Tag.FEATURE_A], precondition=lambda: random_precondition())
-class ing_B_with_precond(AR.Ingredient):
+class tmp_ing_B_with_precond(AR.Ingredient):
     def init(self):
         pass
 
@@ -89,7 +89,7 @@ class ing_B_with_precond(AR.Ingredient):
         pass
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.LOW, precondition=Configuration.Architecture.x86)
-class ing_C(AR.Ingredient):
+class tmp_ing_C(AR.Ingredient):
     def init(self):
         reg = RegisterManager.get()
         AR.asm(f"mov {reg}, 0x12345678")
@@ -106,7 +106,7 @@ class ing_C(AR.Ingredient):
         yield
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, precondition=Configuration.Architecture.riscv)
-class riscv_load_stress(AR.Ingredient):
+class tmp_riscv_load_stress(AR.Ingredient):
     def __init__(self):
         self.mem = None
         self.label = AR.Label(postfix="riscv_label")
@@ -129,7 +129,7 @@ class riscv_load_stress(AR.Ingredient):
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH)
-class ing_with_boot_code(AR.Ingredient):
+class tmp_ing_with_boot_code(AR.Ingredient):
 
     def boot(self):
         if Configuration.Architecture.x86:
@@ -154,7 +154,7 @@ class ing_with_boot_code(AR.Ingredient):
         pass
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.MEDIUM, precondition=(not Configuration.Architecture.riscv))
-class ing_with_event_trigger(AR.Ingredient):
+class tmp_ing_with_event_trigger(AR.Ingredient):
 
     def init(self):
         pass

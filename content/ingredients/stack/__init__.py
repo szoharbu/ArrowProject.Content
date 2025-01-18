@@ -8,7 +8,7 @@ from Arrow_API.resources.register_manager import RegisterManager_API as Register
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.STACK])
-class basic_stack_ing(AR.Ingredient):
+class tmp_basic_stack_ing(AR.Ingredient):
     def init(self):
         pass
 
@@ -22,7 +22,7 @@ class basic_stack_ing(AR.Ingredient):
         pass
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.STACK])
-class multi_stack_ing(AR.Ingredient):
+class tmp_multi_stack_ing(AR.Ingredient):
 
     def __init__(self):
         self.count = random.randint(2,5)

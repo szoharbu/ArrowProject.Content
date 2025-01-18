@@ -4,7 +4,7 @@ from Arrow_API import AR
 
 
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, precondition=Configuration.Architecture.arm)
-class fibonacci_caller(AR.Ingredient):
+class tmp_fibonacci_caller(AR.Ingredient):
     def init(self):
         print('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
         #TG.asm(".extern my_cpp_function", comment="Declare the external C++ function")

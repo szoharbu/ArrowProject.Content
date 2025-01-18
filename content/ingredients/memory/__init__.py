@@ -10,7 +10,7 @@ from Arrow_API.resources.register_manager import RegisterManager_API as Register
 load - store actions of a same memory.  
 '''
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.MEMORY])
-class MemoryPairing_ing(AR.Ingredient):
+class tmp_MemoryPairing_ing(AR.Ingredient):
     def __init__(self):
         self.mem = MemoryManager.Memory(name="MemoryPairing_memory", init_value=random.randint(0, 0x1000))
 
@@ -36,7 +36,7 @@ class MemoryPairing_ing(AR.Ingredient):
 B2B bursts of memory stores , using a shared memory
 '''
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.MEMORY])
-class B2BMemoryStress_ing(AR.Ingredient):
+class tmp_B2BMemoryStress_ing(AR.Ingredient):
 
     def __init__(self):
         self.mem = MemoryManager.Memory(shared=True)
@@ -57,7 +57,7 @@ class B2BMemoryStress_ing(AR.Ingredient):
 stressing multiple memory access of the same memory, with different sizes and offsets
 '''
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, tags=[Configuration.Tag.MEMORY])
-class MemoryOverlapping(AR.Ingredient):
+class tmp_MemoryOverlapping(AR.Ingredient):
 
     def __init__(self):
         self.mem_block = MemoryManager.MemoryBlock(byte_size=random.randint(8,16), init_value=random.randint(1,0xf00000))

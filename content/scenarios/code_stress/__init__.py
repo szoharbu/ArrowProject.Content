@@ -1,6 +1,6 @@
 import random
 
-from Submodules.arrow_content.content_repo.content.ingredients.feature_a import ing_A
+from Submodules.arrow_content.content_repo.content.ingredients.feature_a import tmp_ing_A
 from Utils.configuration_management import Configuration
 from Arrow_API import AR
 from Arrow_API.resources.memory_manager import MemoryManager_API as MemoryManager
@@ -11,7 +11,7 @@ Scenario that will allocate 2 small code blocks, and inside a loop alternate bet
 inside each code block do several ingredients  
 '''
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.RECIPE])
-def code_switching_scenario():
+def tmp_code_switching_scenario():
     ingredient_manager = get_ingredient_manager()
     ings_A = ingredient_manager.get_random_ingredients(count=random.randint(2, 3), tags=[Configuration.Tag.FAST, Configuration.Tag.REST])
     ings_B = ingredient_manager.get_random_ingredients(count=random.randint(2, 3), tags={Configuration.Tag.FEATURE_B:80, Configuration.Tag.REST:20})
@@ -31,12 +31,12 @@ def code_switching_scenario():
     with AR.Loop(counter=10):
         AR.comment('branching to code_A ')
         with AR.BranchToSegment(code_block=code_A):
-            AR.comment(f'running ingredients {ing_A}')
+            AR.comment(f'running ingredients {ings_A}')
             ingredient_manager.call_ingredients_body(ings_A)
 
         AR.comment('branching to code_B ')
         with AR.BranchToSegment(code_block=code_B):
-            AR.comment(f'running ingredients {ing_A}')
+            AR.comment(f'running ingredients {ings_B}')
             ingredient_manager.call_ingredients_body(ings_B)
 
 

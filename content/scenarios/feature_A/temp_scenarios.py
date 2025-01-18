@@ -5,7 +5,7 @@ from Arrow_API.resources.register_manager import RegisterManager_API as Register
 from Utils.configuration_management import Configuration
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.SLOW])
-def loop_scenario():
+def tmp_loop_scenario():
     reg1 = RegisterManager.get_and_reserve()
     loop_counter = AR.choice(values = {10:90,20:10})
     with AR.Loop(counter=loop_counter, counter_direction='increment'):
@@ -18,7 +18,7 @@ def loop_scenario():
 
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM)
-def generate_random_instructions():
+def tmp_random_instructions():
     some_label = AR.Label(postfix="some_label")
     AR.asm(f"{some_label}:")
     for _ in range(5):
@@ -30,19 +30,21 @@ def random_precondition():
     return value
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A, Configuration.Tag.FAST], precondition=lambda:random_precondition())
-def mid_prio_basic():
+def tmp_mid_prio_basic():
     some_label = AR.Label(postfix="some_label")
     AR.asm(f"{some_label}:")
     for _ in range(5):
         AR.generate()
 
 @AR.scenario_decorator(random=True, priority=Configuration.Priority.HIGH, precondition=lambda:random_precondition())
-def random_precondition_scenario():
+def tmp_random_precondition_scenario():
     AR.comment("random_precondition_scenario")
     for _ in range(5):
         AR.generate()
 
 @AR.scenario_decorator(random=False, priority=Configuration.Priority.MEDIUM, tags=[Configuration.Tag.FEATURE_A])
-def not_a_random_scenario():
-    Sources.logger.warning("Scenario: not_a_random_scenario")
+def tmp_not_a_random_scenario():
+    from Utils.logger_management import get_logger
+    logger = get_logger()
+    logger.warning("Scenario: not_a_random_scenario")
     raise ValueError("This scenario should not be selected randomly.")

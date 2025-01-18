@@ -4,11 +4,11 @@ from Arrow_API import AR
 from Arrow_API.resources.register_manager import RegisterManager_API as RegisterManager
 from Arrow_API.resources.memory_manager import MemoryManager_API as MemoryManager
 
-from Submodules.arrow_content.content_repo.content.ingredients.fibonacci.fibonacci_caller import fibonacci_caller
+from Submodules.arrow_content.content_repo.content.ingredients.fibonacci.fibonacci_caller import tmp_fibonacci_caller
 
 _fibonacci_recursive_code_block = None
 @AR.ingredient_decorator(random=True, priority=Configuration.Priority.HIGH, precondition=Configuration.Architecture.arm )
-class fibonacciRecursive_ing(AR.Ingredient):
+class tmp_fibonacciRecursive_ing(AR.Ingredient):
     '''
     Function: fib
     Description: Computes the nth Fibonacci number recursively using the stack for parameter passing and result storage.
